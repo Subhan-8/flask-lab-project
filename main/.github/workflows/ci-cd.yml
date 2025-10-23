@@ -1,6 +1,5 @@
 name: Flask CI/CD
 
-
 on:
   push:
     branches:
