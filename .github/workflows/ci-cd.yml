@@ -13,29 +13,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1️⃣ Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2️⃣ Set up Python
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
+      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: |
           cd main
           pip install -r requirements.txt
 
+      # 4️⃣ Run unit tests (fixed)
       - name: Run unit tests
         run: |
-          cd main
-          pytest
+          export PYTHONPATH=main
+          pytest main/tests
 
+      # 5️⃣ Build Docker image
       - name: Build Docker image
         run: |
           cd main
           docker build -t flask-lab-app .
 
+      # 6️⃣ Login to Docker Hub
       - name: Login to Docker Hub
         if: success()
         uses: docker/login-action@v3
@@ -43,6 +49,7 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
 
+      # 7️⃣ Push Docker image
       - name: Push Docker image
         run: |
           docker tag flask-lab-app ${{ secrets.DOCKER_HUB_USERNAME }}/flask-lab-app:latest
