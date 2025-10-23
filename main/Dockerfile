@@ -1,17 +1,16 @@
-# Use official Python image
-FROM python:3.10-slim
-
-# Set working directory
+# Stage 1: build environment
+FROM python:3.10-slim AS build
 WORKDIR /app
-
-# Copy project files
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN python -m pip install --upgrade pip
+RUN pip install --prefix=/install -r requirements.txt
 
-COPY . .
-
-# Expose port
+# Stage 2: runtime
+FROM python:3.10-slim
+ENV PATH=/install/bin:$PATH
+WORKDIR /app
+COPY --from=build /install /install
+COPY . /app
 EXPOSE 5000
-
-# Run the app
-CMD ["python", "app.py"]
+# Use gunicorn for production serving
+CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app", "--workers", "2"]

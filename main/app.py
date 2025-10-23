@@ -1,10 +1,15 @@
 from flask import Flask, request, jsonify, render_template
+import werkzeug
+
+# Compatibility patch for newer werkzeug versions used in CI/CD
+if not hasattr(werkzeug, "__version__"):
+    werkzeug.__version__ = "patched"
 
 app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "<h1>Welcome to Flask CI/CD Lab!</h1>"
+    return "Welcome to Flask CI/CD Lab!"
 
 @app.route('/health')
 def health():
@@ -12,8 +17,14 @@ def health():
 
 @app.route('/data', methods=['POST'])
 def data():
-    content = request.json
-    return jsonify({"received": content}), 200
+    if request.is_json:
+        data = request.get_json()
+        return jsonify({
+            "status": "success",
+            "received": data
+        }), 200
+    return jsonify({"error": "Invalid data"}), 400
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    # Bind to all network interfaces inside the container
+    app.run(host='0.0.0.0', port=5000, debug=True)
