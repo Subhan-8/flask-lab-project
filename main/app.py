@@ -18,8 +18,10 @@ def health():
 def data():
     if request.is_json:
         data = request.get_json()
-        message = f"Received data: {data}"
-        return jsonify({"status": "success", "message": message}), 200
+        return jsonify({
+            "status": "success",
+            "received": data
+        }), 200
     return jsonify({"error": "Invalid data"}), 400
 
 if __name__ == '__main__':
