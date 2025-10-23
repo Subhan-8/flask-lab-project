@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{% block content %}
+  <section>
+    <h2>Send JSON Data to Flask</h2>
+    <textarea id="jsonInput" rows="5" cols="40" placeholder='{"name": "Alice"}'></textarea><br>
+    <button onclick="sendData()">Send Data</button>
+
+    <h3>Response:</h3>
+    <pre id="responseOutput"></pre>
+  </section>
+{% endblock %}
